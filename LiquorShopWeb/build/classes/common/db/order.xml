@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "file:/src/main/resources/mybatis-3-mapper.dtd">
+
+<mapper namespace="OrderMapper">
+
+	<!-- Insert Order -->
+	<insert id="insertOrder" parameterType="OrderVO">
+		INSERT INTO ORDERS (
+		ORDER_ID, MEMBER_ID, ORDER_DATE, STATUS, TOTAL_PRICE, SHIPPING_ADDRESS
+		)
+		VALUES (
+		#{orderId, jdbcType=NUMERIC},
+		#{memberId, jdbcType=NUMERIC},
+		SYSDATE,
+		'PENDING',
+		#{totalPrice, jdbcType=NUMERIC},
+		#{shippingAddress,
+		jdbcType=CLOB}
+		)
+	</insert>
+
+	<!-- Insert Order Detail -->
+	<insert id="insertOrderDetail" parameterType="OrderDetailVO">
+		INSERT INTO ORDER_DETAIL (
+		ORDER_DETAIL_ID, ORDER_ID, LIQUOR_ID, QUANTITY, PRICE
+		)
+		VALUES (
+		#{orderDetailId, jdbcType=NUMERIC},
+		#{orderId, jdbcType=NUMERIC},
+		#{liquorId, jdbcType=NUMERIC},
+		#{quantity, jdbcType=NUMERIC},
+		#{price, jdbcType=NUMERIC}
+		)
+	</insert>
+
+	<!-- Select Orders by Member ID -->
+	<select id="getOrdersByMemberId" parameterType="int"
+		resultType="OrderVO">
+		SELECT
+		ORDER_ID, MEMBER_ID, ORDER_DATE, STATUS, TOTAL_PRICE,
+		SHIPPING_ADDRESS
+		FROM ORDERS
+		WHERE MEMBER_ID = #{memberId}
+	</select>
+
+	<!-- Select Order Details -->
+	<select id="getOrderDetails" parameterType="long"
+		resultType="OrderDetailVO">
+		SELECT
+		od.ORDER_DETAIL_ID,
+		od.ORDER_ID,
+		od.LIQUOR_ID,
+		od.QUANTITY,
+		od.PRICE,
+		l.NAME AS liquorName
+		FROM ORDER_DETAIL od
+		JOIN
+		LIQUOR l ON od.LIQUOR_ID = l.LIQUOR_ID
+		WHERE od.ORDER_ID = #{orderId}
+	</select>
+
+	<!-- Get Next Order ID -->
+	<select id="getNextOrderId" resultType="long">
+		SELECT ORDER_SEQ.NEXTVAL
+		FROM DUAL
+	</select>
+
+</mapper>

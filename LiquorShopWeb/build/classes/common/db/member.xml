@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "file:/src/main/resources/mybatis-3-mapper.dtd">
+
+<mapper namespace="MemberMapper">
+
+    <!-- 회원 등록 -->
+    <insert id="insertMember" parameterType="kr.ac.kopo.vo.MemberVO">
+        INSERT INTO MEMBER (
+            EMAIL, PASSWORD, USERNAME, PHONE_NUMBER, ADDRESS,
+            JOIN_DATE, MEMBERSHIP_TYPE, SOCIAL_PROVIDER, SOCIAL_ACCOUNT_ID
+        ) VALUES (
+            #{email}, #{password}, #{username}, #{phoneNumber}, #{address},
+            CURRENT_TIMESTAMP, #{membershipType}, #{socialProvider}, #{socialAccountId}
+        )
+    </insert>
+
+    <!-- MEMBER_ID로 회원 조회 -->
+    <select id="getMemberById" parameterType="int" resultType="kr.ac.kopo.vo.MemberVO">
+        SELECT * FROM MEMBER WHERE MEMBER_ID = #{memberId}
+    </select>
+
+    <!-- EMAIL로 회원 조회 -->
+    <select id="selectMemberByEmail" parameterType="string" resultType="kr.ac.kopo.vo.MemberVO">
+        SELECT * FROM MEMBER WHERE EMAIL = #{email}
+    </select>
+
+    <!-- 이메일 중복 확인 -->
+    <select id="isEmailDuplicate" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM MEMBER WHERE EMAIL = #{email}
+    </select>
+
+    <!-- 소셜 계정 중복 확인 -->
+    <select id="isSocialAccountDuplicate" parameterType="map" resultType="int">
+        SELECT COUNT(*) FROM MEMBER
+        WHERE SOCIAL_PROVIDER = #{socialProvider}
+        AND SOCIAL_ACCOUNT_ID = #{socialAccountId}
+    </select>
+
+    <!-- 로그인 처리 -->
+    <select id="selectMemberByEmailAndPassword" parameterType="map" resultType="kr.ac.kopo.vo.MemberVO">
+        SELECT * FROM MEMBER
+        WHERE EMAIL = #{email} AND PASSWORD = #{password}
+    </select>
+
+    <!-- 회원 주소 조회 -->
+    <select id="getMemberAddressById" parameterType="int" resultType="string">
+        SELECT ADDRESS
+        FROM MEMBER
+        WHERE MEMBER_ID = #{memberId}
+    </select>
+
+    <!-- 회원 프로필 수정 -->
+    <update id="updateMemberProfile" parameterType="kr.ac.kopo.vo.MemberVO">
+        UPDATE MEMBER
+        SET USERNAME = #{username},
+            EMAIL = #{email},
+            PHONE_NUMBER = #{phoneNumber},
+            ADDRESS = #{address}
+        WHERE MEMBER_ID = #{memberId}
+    </update>
+
+</mapper>
